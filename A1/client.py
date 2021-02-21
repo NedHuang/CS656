@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # 
 # Mingzhe Huang, 4044090
 # CS 456/656 Assginment 1
@@ -27,8 +28,9 @@ class Client:
     def negotiation(self, req_code):
         self.tcp_negotiation_socket.send(req_code.encode())
         r_port = self.tcp_negotiation_socket.recv(1024).decode()
+        r_port = int(r_port)
+        # r_port is 0 means req_code doesn't match
         
-        # 
         if r_port == 0:
             print("INVALID <req_code>")
             self.tcp_negotiation_socket.close()
@@ -49,29 +51,32 @@ class Client:
         print(str(reversed_msg))
         sys.exit(1)
 
-    # Shut down the client after an input.
-    # def shutdown(self):
-    #     k = input("Press any key to exit.")
-    #     if type(k) is str:
-    #         self.udp_transaction_socket.close()
-    #         self.tcp_negotiation_socket.close()
-    #         sys.exit(0)
-
 
 def main():
+    """
+    Stage 1:
+    Negotiation using TCP sockets. If the req_code matches with server's req_code, server will send r_port to client and close tcp connection.
+    Otherwise, server will terminate TCP connection
+
+    Stage 2:
+    Transaction using UDP sockets. Client creates a UDP socket to the server in <r_port> and sends the <msg> containing a string.
+    When the server receives the string it sends the reversed string back to the client. Once received, the client prints out the reversed string and exits.
+    """
+
     if len(sys.argv) != 5:          # Valid the number of input arguments.
-        print("Improper number of arguments.")
+        print("There should be 4 parameters: <server_address>, <n_port>, <req_code>, and <msg>")
         sys.exit(1)
     else:
+        # read variables from argv
         server_address = sys.argv[1]
-        n_port = sys.argv[2]
+        n_port = int(sys.argv[2])
         req_code = sys.argv[3]
         msg = sys.argv[4]
 
-        client = Client(str(server_address), int(n_port), req_code)
+        # create an object of client and call send_and_reveive_msg function
+        client = Client(str(server_address), n_port, req_code)
         client.send_and_receive_msg(str(server_address),msg)
-        # client.shutdown()
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # 
 # Mingzhe Huang, 4044090
 # CS 456/656 Assginment 1
@@ -36,7 +37,6 @@ class Server():
                 client_socket.send("0".encode('utf-8'))
             # if req_code matches, send the client r_port. call function receive_reverse_send_message.
             else:
-                print('r_port: ', self.r_port)
                 client_socket.send(str(self.r_port).encode('utf-8'))
                 self.receive_reverse_send_message()
             # close this tcp socket
@@ -52,23 +52,19 @@ class Server():
         # print("send reversed message: ",reversed_msg)
         # send reversed msg to client
         self.udp_transaction_socket.sendto(reversed_msg.encode('utf-8'),client_address)
-        exit(1)
+        # exit(1)
 
     
 
 def main():
-    """Negotiates a random port with clients to transact messages.
-    Checks if request code was determined in a command line argument.
-    Listens for client requests for negotiations.
-    Negotiates a TCP port with a client over UDP, and then conducts a
-    transaction with the client over said TCP port.
-    Command Line Args:
-        req_code: the request code that client requests will be checked
-            against.
-    Raises:
-        IndexError: If no request code was determined in the command line
-            argument.
-        ValueError: If the request code determined is not an integer.
+    """
+    Stage 1:
+    Negotiation using TCP sockets. If the req_code matches with client's req_code, server will send r_port to client and close tcp connection.
+    Otherwise, server will terminate TCP connection
+
+    Stage 2:
+    Transaction using UDP sockets. Client creates a UDP socket to the server in <r_port> and sends the <msg> containing a string.
+    When the server receives the string it sends the reversed string back to the client. Once received, the client prints out the reversed string and exits.
     """
     # use try - except to throught errors
     try:
@@ -77,7 +73,7 @@ def main():
         print("MISSING PARAMETER: <req_code>")
         sys.exit(1)
     except ValueError:
-        print("<req_code> MUST BE INTEGER, TRY AGAIN")
+        print("<req_code> SHOULD BE INTEGER")
         sys.exit(1)
     # n_socket = create_socket(socket.SOCK_DGRAM, "SERVER_PORT")
     # while True:
